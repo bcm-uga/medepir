@@ -21,6 +21,3 @@ This function return a dataframe with different random covariables.
 \description{
 This function make a random experimental group.
 }
-\examples{
-
-}

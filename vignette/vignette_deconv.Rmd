@@ -15,10 +15,10 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 ```{r datas}
-D = readRDS("/home/decampcl/projects/DNAdeconv/data/D.rds")
+D = readRDS("data/D.rds")
 dim(D)
 head(D)[1:5, 1:5]
-exp_grp = readRDS("/home/decampcl/projects/DNAdeconv/data/exp_grp.rds")
+exp_grp = readRDS("data/exp_grp.rds")
 dim(exp_grp)
 head(exp_grp)[1:5, 1:5]
 ```
@@ -29,7 +29,7 @@ head(exp_grp)[1:5, 1:5]
 We want to remove probes correlated with confounders variables. For this, we used the function `CF_detection` which makes a linear regression.
 
 ```{r CF}
-D_CF = DNAdeconv::CF_detection(D, exp_grp)
+D_CF = medepir::CF_detection(D, exp_grp)
 
 dim(D_CF)
 
@@ -41,7 +41,7 @@ print(paste0("Number of correlated probes removed : ", nrow(D) - nrow(D_CF)))
 To choose the number k of cell types, we used the function `plot_k` which makes a PCA.
 
 ```{r choice_k}
-DNAdeconv::plot_k(D_CF)  
+medepir::plot_k(D_CF)  
 ```
 Here with the Cattel's rule we select 4 principal components, that is to say 5 cell types.
 
@@ -50,7 +50,7 @@ Here with the Cattel's rule we select 4 principal components, that is to say 5 c
 We also want te select a subset of appropriate features. For this, we used `feature_selection` which keep only most variable probes.
 
 ```{r FS}
-D_FS = DNAdeconv::feature_selection(D_CF, pval = 0.02)
+D_FS = medepir::feature_selection(D_CF, pval = 0.02)
 
 dim(D_FS)
 
@@ -62,10 +62,10 @@ print(paste0("Number of low variance probes removed : ", nrow(D_CF) - nrow(D_FS)
 There is 3 methods of deconvolution.
 
 ```{r deconv}
-results_RFE = DNAdeconv::RFE(D_FS, nbcell = 5)
-results_MDC = DNAdeconv::MDC(D_FS, nbcell = 5, lambdas = c(0,10^(-5:-1)))
+results_RFE = medepir::RFE(D_FS, nbcell = 5)
+results_MDC = medepir::MDC(D_FS, nbcell = 5, lambdas = c(0,10^(-5:-1)))
 
-infloci = read.table("/home/decampcl/projects/DNAdeconv/data/inf_loci.txt", header = FALSE, sep = "\t")
+infloci = read.table("data/inf_loci.txt", header = FALSE, sep = "\t")
 infloci = as.vector(infloci$V1)
-results_Edec = DNAdeconv::Edec(D, nbcell = 5, infloci = infloci)
+results_Edec = medepir::Edec(D, nbcell = 5, infloci = infloci)
 ```

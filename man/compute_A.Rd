@@ -14,11 +14,8 @@ compute_A(n = 100, prop = c(0.3, 0.6, 0.1), alpha0 = 1)
 \item{alpha0}{The variance between the patients, 1 is an high variance and 10,000 is a very low variance.}
 }
 \value{
-This function return a matrix of Dirichlet distribution.
+This function return a matrix of size k*n with the cell type proportions.
 }
 \description{
 This function make a Dirichlet distribution
-}
-\examples{
-
 }

@@ -1,0 +1,46 @@
+---
+title: "Simulations"
+author: "Clémentine Decamps"
+date: "13 juin 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#Data
+
+
+```{r datas}
+T_brute = readRDS("data/T_brut_2.rds")
+effet_plaque = readRDS("data/plate_effect.rds")
+coeff_luad = readRDS("data/regression_sexe.rds")$luad
+coeff_lusc = readRDS("data/regression_sexe.rds")$lusc
+sites_sexe = colnames(coeff_luad)[coeff_luad[8,] < (0.01) | coeff_lusc[8,] < (0.01)]
+coeff_sexe = apply(cbind(coeff_luad[2, ], coeff_lusc[2, ]), 1, mean)
+```
+
+#Simulation of A and D matrices
+
+```{r simulations}
+A = medepir::compute_A(n = 100, prop = c(0.1, 0.6, 0.05, 0.15, 0.1), alpha = 1)
+
+exp_grp = medepir::create_exp_grp(n= 100, plates = effet_plaque[,1], sex = T, age = F)
+
+D = medepir::compute_D(A_mat = A, T_mat = T_brute, exp_grp, sites_sex = sites_sexe, 
+              coeff_sex = coeff_sexe, plate_effect = effet_plaque)
+
+```
+
+#Deconvolution of the D matrix
+
+```{r deconv}
+results_RFE = medepir::RFE(D, nbcell = 5)
+```
+
+#Analysis of the results
+```{r results}
+medepir::compare_A(A_r = A, A_est = results_RFE$A)
+
+```

@@ -7,9 +7,7 @@
 #'@param prop The different proportion of cell types in a vector of size k (number of cell types).
 #'@param alpha0 The variance between the patients, 1 is an high variance and 10,000 is a very low variance.
 #'
-#'@return This function return a matrix of Dirichlet distribution.
-#'
-#'@example 
+#'@return This function return a matrix of size k*n with the cell type proportions.
 #'
 #'@export
 compute_A = function(n = 100, prop = c(0.3, 0.6, 0.1), alpha0 = 1){
@@ -26,8 +24,6 @@ compute_A = function(n = 100, prop = c(0.3, 0.6, 0.1), alpha0 = 1){
 #'@param age False by defaul, True if you want an age parameter.
 #'
 #'@return This function return a dataframe with different random covariables.
-#'
-#'@example 
 #'
 #'@export
 create_exp_grp = function(n, plates = NA, sex = F, age = F){
@@ -60,28 +56,12 @@ create_exp_grp = function(n, plates = NA, sex = F, age = F){
 #'
 #'@return This function return a matrix modified for the sex.
 #'
-#'@example 
 compute_TF = function(sites, coeff, T_brut){
   T_F = T_brute
   T_F[sites,] = (T_F[sites,] - coeff[sites])
   T_F[which(T_F < 0)] = 0
   T_F[which(T_F > 1)] = 1
   return(T_F)
-}
-
-#'Function to compute A
-#'
-#' This function make a Dirichlet distribution
-#'
-#'@param sites The names of probes affected by the age effect.
-#'@param effect The list of linear regression between probes affected by the age and the age.
-#'@param alpha0 The variance between the patients, 1 is an high variance and 10,000 is a very low variance.
-#'
-#'@return This function a matrix of Dirichlet distribution.
-#'
-#'@example 
-age_effect = function(sites, effect){
-  #On verra
 }
 
 
@@ -95,8 +75,9 @@ age_effect = function(sites, effect){
 #'@param coeff_sex NA by default, set coeff of sex if you want a sex effect.
 #'@param plate_effect, Na by default, put plate_effect if you want one
 #'
-#'@return This function return the matrix with noise.
+#'@return This function return a matrix of size probes*n with possibly an effect of confounding factors
 #'
+#'@export
 compute_D = function(A_mat, T_mat, exp_grp, sites_sex = NA, coeff_sex = NA,
                            plate_effect = NA){
   #Effect of sex
@@ -134,6 +115,7 @@ compute_D = function(A_mat, T_mat, exp_grp, sites_sex = NA, coeff_sex = NA,
 #'
 #'@return This function return the matrix with noise.
 #'
+#'@export
 add_noise = function(data, mean = 0, sd = 0.2, val_min = 0, val_max = 1){
   noise = matrix(rnorm(prod(dim(data)), mean = mean, sd = sd), nrow = nrow(data))
   datam = data + noise
@@ -141,3 +123,56 @@ add_noise = function(data, mean = 0, sd = 0.2, val_min = 0, val_max = 1){
   datam[datam > val_max] = data[datam > val_max]
   return(datam)
 }
+
+#' Computing the Mean Absolute Error
+#'
+#' This function compute the mean absolute error between 2 matrices
+#'
+#' @param M1 First matrix.
+#' @param M2 Second matrix
+#' 
+#' @return This function return the mean absolute error between the 2 matrices.
+#' 
+MAE <- function(M1, M2) {
+  mean(abs(M1 - M2))
+}
+
+#' Compare the A matrices
+#'
+#' This function compute errors between the two A matrices,
+#'   after guessing the permutation from the minimum MAE.
+#'
+#' @param A_r The real A matrix used for the simulation..
+#' @param A_est The calculated A matrix.
+#'   Permutation is guessed from the minimum MAE.
+#'
+#'@return This function return the matrix with noise.
+#' @export
+compare_A <- function(A_r, A_est) {
+  
+  N <- ncol(A_r)
+  K <- nrow(A_r)
+  stopifnot(K > 1)
+  
+  stopifnot(ncol(A_est) == N)
+  stopifnot(nrow(A_est) < ncol(A_est))
+  stopifnot(nrow(A_est) <= 10)
+  stopifnot(!anyNA(A_est))
+  
+  # if not supplying enough types (make sure that {nrow(A_est) >= K})
+  if (nrow(A_est) < K) A_est <- rbind(A_est, matrix(0, K - nrow(A_est), N))
+  
+  comb <- unlist(
+    combinat::combn(nrow(A_est), K, fun = combinat::permn, simplify = FALSE),
+    recursive = FALSE
+  )
+  comb_MAE <- sapply(comb, function(perm) {
+    MAE(A_r, A_est[perm, , drop = FALSE])
+  })
+  
+  perm <- comb[[which.min(comb_MAE)]]
+  A_estim_perm <- A_est[perm, , drop = FALSE]
+  
+  return(MAE  = MAE(A_r, A_estim_perm))
+}
+

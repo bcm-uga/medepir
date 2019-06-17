@@ -19,7 +19,7 @@ compute_D(A_mat, T_mat, exp_grp, sites_sex = NA, coeff_sex = NA,
 \item{plate_effect, }{Na by default, put plate_effect if you want one}
 }
 \value{
-This function return the matrix with noise.
+This function return a matrix of size probes*n with possibly an effect of confounding factors
 }
 \description{
 This function compute the D matrix with an effect on age and / or plates
