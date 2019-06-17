@@ -14,7 +14,7 @@
 
 Edec = function(D, nbcell = 5, infloci){
   #Application de la méthode pour cette liste
-  deconv = run_edec_stage_1(meth_bulk_samples = D, 
+  deconv = EDec::run_edec_stage_1(meth_bulk_samples = D, 
                             informative_loci = infloci, num_cell_types = nbcell)
   #Extraction des matrices T et A
   T_est = as.matrix(deconv$methylation)

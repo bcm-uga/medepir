@@ -66,5 +66,6 @@ results_RFE = DNAdeconv::RFE(D_FS, nbcell = 5)
 results_MDC = DNAdeconv::MDC(D_FS, nbcell = 5, lambdas = c(0,10^(-5:-1)))
 
 infloci = read.table("/home/decampcl/projects/DNAdeconv/data/inf_loci.txt", header = FALSE, sep = "\t")
-results_Edec = DNAdeconv::Edec(D_FS, nbcell = 5, infloci = infloci)
+infloci = as.vector(infloci$V1)
+results_Edec = DNAdeconv::Edec(D, nbcell = 5, infloci = infloci)
 ```
