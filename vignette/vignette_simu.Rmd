@@ -11,35 +11,68 @@ knitr::opts_chunk$set(echo = TRUE)
 
 #Data
 
+To simulate the T matrix of cell type-specific methylation profile, we used different study from GEO. For the cancerous epithelial line, we used the cell line GSM1560930 and for the cancerous mesenchymal line, we used the cell line GSM1560925, from the same study. For the fibroblast line, we used the cell line GSM1354676 after conversion from m-value to b-value. For the T lymphocyte line, we used the GSM1641099 and for the control epithelial it’s the GSM2743808.
+
+`plate_effect` is 22 median plate effects (TCGA experimental batch effect) using 1000 random probes, that we randomly apply on the simulated D matrix.
+
+
+`sites_sexe` is the 1397 probes identified correlated with sex in the TCGA dataset (p-value < 0.01) using linear regression. `coeff_sexe` is the linear regression coefficient used to shift accordingly methylation value of female-associated T matrices. 
 
 ```{r datas}
-T_brute = readRDS("data/T_brut_2.rds")
-effet_plaque = readRDS("data/plate_effect.rds")
+T_brute = readRDS("/data/T_brut_2.rds")
+head(T_brute)
+
+plate_effect = readRDS("data/plate_effect.rds")
+head(plate_effect)
+
 coeff_luad = readRDS("data/regression_sexe.rds")$luad
 coeff_lusc = readRDS("data/regression_sexe.rds")$lusc
 sites_sexe = colnames(coeff_luad)[coeff_luad[8,] < (0.01) | coeff_lusc[8,] < (0.01)]
 coeff_sexe = apply(cbind(coeff_luad[2, ], coeff_lusc[2, ]), 1, mean)
+head(sites_sexe)
+head(coeff_sexe)
 ```
 
-#Simulation of A and D matrices
+#Simulation of A matrix
 
-```{r simulations}
+The function `compute_A` simulated the A matrix of cell types proportion by a Dirichlet distribution. `n` is the number of patients, `prop` define the differentcell type proportion, here we used 10% of fibroblast, 60% of cancerous epithelial, 5% of T lymphocytes, 15% of control epithelial and 10% of cancerous mesenchyme.
+`alpha` is the parameter of variation of proportions across the sample population. 1 is a variable population.
+
+```{r simulation_A}
 A = medepir::compute_A(n = 100, prop = c(0.1, 0.6, 0.05, 0.15, 0.1), alpha = 1)
+plot(density(A))
+```
 
-exp_grp = medepir::create_exp_grp(n= 100, plates = effet_plaque[,1], sex = T, age = F)
+#Simulation of D matrix
+
+The function `create_exp_grp` make a random experimental dataset. It samples randomly the plate, the sex and / or the age of each patient. 
+
+The function `compute_D` allow to obtain the D matrix according to the D = TA model with all the confounding factors. The sex effect is add directly on the T matrix, while the plate effect is add after the multiplication. 
+
+Finnaly, the function `add_noise` add a random gaussian noise on the D matrix.
+
+```{r simulation_A}
+exp_grp = medepir::create_exp_grp(n = 100, plates = plate_effect[,1], sex = T, age = F)
 
 D = medepir::compute_D(A_mat = A, T_mat = T_brute, exp_grp, sites_sex = sites_sexe, 
-              coeff_sex = coeff_sexe, plate_effect = effet_plaque)
+              coeff_sex = coeff_sexe, plate_effect = plate_effect)
+
+D_noise = medepir::add_noise(data = D, mean = 0)
 
 ```
 
 #Deconvolution of the D matrix
 
+We used the package RefFreeEwas to make the deconvolution.
+
 ```{r deconv}
-results_RFE = medepir::RFE(D, nbcell = 5)
+results_RFE = medepir::RFE(D_noise, nbcell = 5)
 ```
 
 #Analysis of the results
+
+The function `compare_A` compute the Mean Absolute Error between the A matrix used for the simulation and the A matrix compute by the method of deconvolution.
+
 ```{r results}
 medepir::compare_A(A_r = A, A_est = results_RFE$A)
 
