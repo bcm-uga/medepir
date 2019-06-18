@@ -13,7 +13,11 @@ knitr::opts_chunk$set(echo = TRUE)
 
 #Data
 
+`D` is a simulated matrix of a complex tissue DNA methylation values.
+`exp_grp` is the corresponding experimental data, with for each patient different biological informations.
+From this complex D matrix, we want to performs non-negative matrix factorization to find cell type proportion (matrix A) and cell type-specific methylation profiles (matrix T).
 
+D = TA
 ```{r datas}
 D = readRDS("data/D.rds")
 dim(D)
@@ -26,10 +30,10 @@ head(exp_grp)[1:5, 1:5]
 
 #Step 1 : filter 
 
-We want to remove probes correlated with confounders variables. For this, we used the function `CF_detection` which makes a linear regression.
+Variation in DNA methylation relies on different factors, that are not always related with cell-type composition (such as age, sex, batch effects, etc.). We used the function `CF_detection` to removed probes correlated with confounding factors.
 
 ```{r CF}
-D_CF = medepir::CF_detection(D, exp_grp)
+D_CF = medepir::CF_detection(D, exp_grp, threshold = 0.15)
 
 dim(D_CF)
 
@@ -38,16 +42,18 @@ print(paste0("Number of correlated probes removed : ", nrow(D) - nrow(D_CF)))
 
 #Step 2 : choose k 
 
-To choose the number k of cell types, we used the function `plot_k` which makes a PCA.
+To choose the number k of cell types, we used the function `plot_k` which makes a Principal Component Analysis and plot the eigenvalues of the probes matrix in descending order.
 
 ```{r choice_k}
 medepir::plot_k(D_CF)  
 ```
-Here with the Cattel's rule we select 4 principal components, that is to say 5 cell types.
+
+Then we used the Cattel's rule to select the number of principal components. Here, we see PCs = 4 which corresponds to 5 cell types.
 
 #Step 3 : feature selection 
 
-We also want te select a subset of appropriate features. For this, we used `feature_selection` which keep only most variable probes.
+A popular assumption is that removing probes by feature selection will improve performance of deconvolution methods. Yet, such an approach may also discard relevant biological information (Teschendorff et al. 2017).
+The function `feature_selection` returns only probes with the largest variance.
 
 ```{r FS}
 D_FS = medepir::feature_selection(D_CF, pval = 0.02)
@@ -59,7 +65,9 @@ print(paste0("Number of low variance probes removed : ", nrow(D_CF) - nrow(D_FS)
 
 #Step 4 : deconvolution
 
-There is 3 methods of deconvolution.
+D = TA
+We propose three methods of deconvolution, of three packages :
+`RFE` to run `RefFreeEWAS::RefFreeCellMix`, MDC to run `MeDeCom::runMeDeCom` and Edec to run `EDec::run_edec_stage_1`. 
 
 ```{r deconv}
 results_RFE = medepir::RFE(D_FS, nbcell = 5)

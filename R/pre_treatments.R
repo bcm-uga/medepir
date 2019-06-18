@@ -50,13 +50,14 @@ pval_CF <- function(val, labels) {
 #'
 #'@param D The matrix patients*probes.
 #'@param exp_grp The matrix of experimental data for all the patients.
+#'@param threshold The threshold of FDR, probes above this threshold will be conserved.
 #'
 #'@return This function return the D matrix without correlated probes.
 #'
 #'@example 
 #'
 #'@export
-CF_detection <- function(D, exp_grp){
+CF_detection <- function(D, exp_grp, threshold = 0.15){
   NCORES <- bigstatsr::nb_cores()
   exp_grp <- exp_grp[sapply(exp_grp, function(x) mean(is.na(x)) <= 0.8)]
   library(doParallel)
@@ -65,7 +66,7 @@ CF_detection <- function(D, exp_grp){
     pval_CF(val = t(D), labels = var)
   }
   adjpvalues <- apply(pvalues, 2, stats::p.adjust, method = "fdr")
-  keep_marker <- apply(adjpvalues, 1, min, na.rm = TRUE) > 0.15
+  keep_marker <- apply(adjpvalues, 1, min, na.rm = TRUE) > threshold
   return(D[keep_marker, ])
 }
 
