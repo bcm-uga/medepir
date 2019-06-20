@@ -16,6 +16,7 @@ Imports:
     bigstatsr,
     ggplot2,
     RefFreeEWAS,
+    doParallel
+Suggests:
     MeDeCom,
-    EDec,
-	doParallel
+    EDec
