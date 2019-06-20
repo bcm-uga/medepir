@@ -4,12 +4,14 @@
 \alias{CF_detection}
 \title{Function to remove correlated probes}
 \usage{
-CF_detection(D, exp_grp)
+CF_detection(D, exp_grp, threshold = 0.15)
 }
 \arguments{
 \item{D}{The matrix patients*probes.}
 
 \item{exp_grp}{The matrix of experimental data for all the patients.}
+
+\item{threshold}{The threshold of FDR, probes above this threshold will be conserved.}
 }
 \value{
 This function return the D matrix without correlated probes.
