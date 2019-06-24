@@ -43,6 +43,9 @@ pval_CF <- function(val, labels) {
   }, error = function(e) NULL)
 }
 
+#' @importFrom bigstatsr nb_cores
+#' @export
+bigstatsr::nb_cores
 
 #'Function to remove correlated probes
 #'
@@ -51,17 +54,18 @@ pval_CF <- function(val, labels) {
 #'@param D The matrix patients*probes.
 #'@param exp_grp The matrix of experimental data for all the patients.
 #'@param threshold The threshold of FDR, probes above this threshold will be conserved.
+#'@param ncores Number of cores to use. Default is `nb_cores()`.
 #'
 #'@return This function return the D matrix without correlated probes.
+#'
+#'@import foreach
 #'
 #'@example 
 #'
 #'@export
-CF_detection <- function(D, exp_grp, threshold = 0.15){
-  NCORES <- bigstatsr::nb_cores()
+CF_detection <- function(D, exp_grp, threshold = 0.15, ncores = nb_cores()){
   exp_grp <- exp_grp[sapply(exp_grp, function(x) mean(is.na(x)) <= 0.8)]
-  library(doParallel)
-  doParallel::registerDoParallel(NCORES)
+  doParallel::registerDoParallel(ncores)
   pvalues <- foreach(var = exp_grp, .combine = "cbind") %dopar% {
     pval_CF(val = t(D), labels = var)
   }
