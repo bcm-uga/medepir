@@ -12,6 +12,8 @@ compute_D(A_mat, T_mat, exp_grp, sites_sex = NA, coeff_sex = NA,
 
 \item{T_mat}{The T matrix.}
 
+\item{exp_grp}{The matrix of experimental data for all the patients.}
+
 \item{sites_sex}{NA by default, set sites affected by sex if you want a sex effect}
 
 \item{coeff_sex}{NA by default, set coeff of sex if you want a sex effect.}

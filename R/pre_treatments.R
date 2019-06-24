@@ -6,16 +6,14 @@
 #'
 #'@return This function returns the plot of the ACP.
 #'
-#'@example plot_k(D)
+#'@import ggplot2
 #'
 #'@export
 plot_k = function(D){
   X <- bigstatsr::as_FBM(t(D))
   svd <- bigstatsr::big_SVD(X, bigstatsr::big_scale())
-  df = data.frame(val = svd$d,
-                  idx = 1:10)
-  library(ggplot2)
-  ggplot(df, aes(x = idx, y = val)) + 
+  
+  ggplot(data.frame(val = svd$d, idx = 1:10), aes(x = idx, y = val)) + 
     geom_line() +
     geom_point() + scale_x_continuous(breaks = 1:10)+
     labs(x = "PC index", y = "Eigenvalues") +
@@ -33,16 +31,14 @@ plot_k = function(D){
 #'
 #'@return this function return pvalues
 #'
-#'@example 
 pval_CF <- function(val, labels) {
   tryCatch({
     if (!is.numeric(labels)) labels <- as.factor(labels)
-    fit <- lm(X ~ Y, data = data.frame(X = I(val), Y = labels))
+    fit <- stats::lm(X ~ Y, data = data.frame(X = I(val), Y = labels))
     f <- sapply(summary(fit), function(sm) sm$fstatistic)
-    pf(f[1, ], f[2, ], f[3, ], lower.tail = FALSE)
+    stats::pf(f[1, ], f[2, ], f[3, ], lower.tail = FALSE)
   }, error = function(e) NULL)
 }
-
 
 #'Function to remove correlated probes
 #'
@@ -51,17 +47,17 @@ pval_CF <- function(val, labels) {
 #'@param D The matrix patients*probes.
 #'@param exp_grp The matrix of experimental data for all the patients.
 #'@param threshold The threshold of FDR, probes above this threshold will be conserved.
+#'@param ncores Number of cores to use. Default is `nb_cores()`.
 #'
 #'@return This function return the D matrix without correlated probes.
 #'
-#'@example 
+#'@import foreach
 #'
 #'@export
-CF_detection <- function(D, exp_grp, threshold = 0.15){
-  NCORES <- bigstatsr::nb_cores()
+CF_detection <- function(D, exp_grp, threshold = 0.15, ncores = nb_cores()){
   exp_grp <- exp_grp[sapply(exp_grp, function(x) mean(is.na(x)) <= 0.8)]
-  library(doParallel)
-  doParallel::registerDoParallel(NCORES)
+  doParallel::registerDoParallel(ncores)
+  on.exit(doParallel::stopImplicitCluster(), add = TRUE)
   pvalues <- foreach(var = exp_grp, .combine = "cbind") %dopar% {
     pval_CF(val = t(D), labels = var)
   }
@@ -79,8 +75,6 @@ CF_detection <- function(D, exp_grp, threshold = 0.15){
 #'@param pval The minimum variance to be selected.
 #'
 #'@return This function return the D matrix with selected probes.
-#'
-#'@example 
 #'
 #'@export
 feature_selection <- function(D, pval = 0.02){

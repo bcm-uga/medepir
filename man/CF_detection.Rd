@@ -4,7 +4,7 @@
 \alias{CF_detection}
 \title{Function to remove correlated probes}
 \usage{
-CF_detection(D, exp_grp, threshold = 0.15)
+CF_detection(D, exp_grp, threshold = 0.15, ncores = nb_cores())
 }
 \arguments{
 \item{D}{The matrix patients*probes.}
@@ -12,13 +12,12 @@ CF_detection(D, exp_grp, threshold = 0.15)
 \item{exp_grp}{The matrix of experimental data for all the patients.}
 
 \item{threshold}{The threshold of FDR, probes above this threshold will be conserved.}
+
+\item{ncores}{Number of cores to use. Default is \code{nb_cores()}.}
 }
 \value{
 This function return the D matrix without correlated probes.
 }
 \description{
 This function searchs the correlated probes by linear model.
-}
-\examples{
-
 }

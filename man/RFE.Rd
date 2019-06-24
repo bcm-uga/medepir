@@ -17,6 +17,3 @@ This function return a list with the A and the T matrices computed.
 \description{
 This function run RefFreeCellMix and select A and T.
 }
-\examples{
-
-}

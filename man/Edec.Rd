@@ -19,6 +19,3 @@ This function return a list with the A and the T matrices computed.
 \description{
 This function run Edec. and select A and T.
 }
-\examples{
-
-}

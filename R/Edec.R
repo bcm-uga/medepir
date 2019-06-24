@@ -8,11 +8,12 @@
 #'
 #'@return This function return a list with the A and the T matrices computed.
 #'
-#'@example 
-#'
 #'@export
-
 Edec = function(D, nbcell = 5, infloci){
+  
+  if (!requireNamespace("EDec", quietly = TRUE))
+    stop("Please install package {EDec} (https://github.com/BRL-BCM/EDec).")
+  
   #Application de la méthode pour cette liste
   deconv = EDec::run_edec_stage_1(meth_bulk_samples = D, 
                             informative_loci = infloci, num_cell_types = nbcell)

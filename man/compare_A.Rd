@@ -17,5 +17,5 @@ This function return the matrix with noise.
 }
 \description{
 This function compute errors between the two A matrices,
-  after guessing the permutation from the minimum MAE.
+after guessing the permutation from the minimum MAE.
 }

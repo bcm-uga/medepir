@@ -1,31 +1,23 @@
-# medepir
-Data challenge methods 
+# medepir: MEthylation DEconvoluation PIpeline in R
 
-The `medepir` package (MEthylation DEconvoluation PIpeline in R) provides practical implementation of recommended guidelines for inference of cell-type proportions with confounders, based on non-negative matrix factorization of DNA methylation data. 
+Package {medepir} (MEthylation DEconvoluation PIpeline in R) provides practical implementation of recommended guidelines for inference of cell-type proportions with confounders, based on non-negative matrix factorization of DNA methylation data. 
 
 ## Installation
 
-To get the current development version from github:
-
-```
-git clone https://github.com/bcm-uga/medepir.git
-cd medepir 
-R
-```
-
-## Build package
+To get the current version from GitHub:
 
 ```R
-install.packages("devtools")
-# bigstatr ggplot2 RefFreeEWAS doParallel
-devtools::load_all(); devtools::document(); devtools::install()
+remotes::install_github("bcm-uga/medepir")
 ```
 
-## Build vignettes
+To also build vignettes, use:
 
 ```R
-setwd("vignette")
-rmarkdown::render("vignette_deconv.Rmd")
-rmarkdown::render("vignette_simu.Rmd")
+# Take 1-5 min to build
+remotes::install_github(
+  "bcm-uga/medepir", build_opts = c("--no-resave-data", "--no-manual"))
+                        
+# To see the two vignettes:
+vignette("simulations", package = "medepir")
+vignette("deconvolution", package = "medepir")
 ```
-

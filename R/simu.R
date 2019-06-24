@@ -57,7 +57,7 @@ create_exp_grp = function(n, plates = NA, sex = F, age = F){
 #'@return This function return a matrix modified for the sex.
 #'
 compute_TF = function(sites, coeff, T_brut){
-  T_F = T_brute
+  T_F = T_brut
   T_F[sites,] = (T_F[sites,] - coeff[sites])
   T_F[which(T_F < 0)] = 0
   T_F[which(T_F > 1)] = 1
@@ -71,6 +71,7 @@ compute_TF = function(sites, coeff, T_brut){
 #'
 #'@param A_mat The A matrix.
 #'@param T_mat The T matrix.
+#'@param exp_grp The matrix of experimental data for all the patients.
 #'@param sites_sex NA by default, set sites affected by sex if you want a sex effect
 #'@param coeff_sex NA by default, set coeff of sex if you want a sex effect.
 #'@param plate_effect, Na by default, put plate_effect if you want one
@@ -85,7 +86,7 @@ compute_D = function(A_mat, T_mat, exp_grp, sites_sex = NA, coeff_sex = NA,
     T_F = compute_TF(sites_sex, coeff_sex, T_mat)
   }
   D_brut = c()
-  for (i in 1:ncol(A)){
+  for (i in 1:ncol(A_mat)){
     if (exp_grp[i, "sex"] == "F"){
       T_cas = T_F
     } else {
@@ -96,7 +97,7 @@ compute_D = function(A_mat, T_mat, exp_grp, sites_sex = NA, coeff_sex = NA,
   }
   
   if(sum(!is.na(plate_effect))){
-    for(p in 1:ncol(A)){
+    for(p in 1:ncol(A_mat)){
       plaque = exp_grp$plates[p]
       D_brut[p,] = D_brut[p,] * plate_effect[plaque, 2]
     }
@@ -117,7 +118,8 @@ compute_D = function(A_mat, T_mat, exp_grp, sites_sex = NA, coeff_sex = NA,
 #'
 #'@export
 add_noise = function(data, mean = 0, sd = 0.2, val_min = 0, val_max = 1){
-  noise = matrix(rnorm(prod(dim(data)), mean = mean, sd = sd), nrow = nrow(data))
+  noise = matrix(stats::rnorm(prod(dim(data)), mean = mean, sd = sd), 
+                 nrow = nrow(data))
   datam = data + noise
   datam[datam < val_min] = data[datam < val_min]
   datam[datam > val_max] = data[datam > val_max]

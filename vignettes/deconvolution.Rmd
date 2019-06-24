@@ -1,8 +1,12 @@
 ---
-title: "vignette_deconv"
+title: "Deconvolution"
 author: "Clémentine Decamps"
-date: "6 juin 2019"
-output: html_document
+date: "June 6, 2019"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Deconvolution}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include=FALSE}
@@ -11,7 +15,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 
-#Data
+## Data
 
 `D` is a simulated matrix of a complex tissue DNA methylation values.
 `exp_grp` is the corresponding experimental data, with for each patient different biological informations.
@@ -19,28 +23,28 @@ From this complex D matrix, we want to performs non-negative matrix factorizatio
 
 D = TA
 ```{r datas}
-D = readRDS("data/D.rds")
+D = readRDS(url("https://zenodo.org/record/3247635/files/D.rds"))
 dim(D)
 head(D)[1:5, 1:5]
-exp_grp = readRDS("data/exp_grp.rds")
+exp_grp = readRDS(url("https://zenodo.org/record/3247635/files/exp_grp.rds"))
 dim(exp_grp)
 head(exp_grp)[1:5, 1:5]
 ```
 
 
-#Step 1 : filter 
+## Step 1 : filter 
 
 Variation in DNA methylation relies on different factors, that are not always related with cell-type composition (such as age, sex, batch effects, etc.). We used the function `CF_detection` to removed probes correlated with confounding factors.
 
 ```{r CF}
-D_CF = medepir::CF_detection(D, exp_grp, threshold = 0.15)
+D_CF = medepir::CF_detection(D, exp_grp, threshold = 0.15, ncores = 2)
 
 dim(D_CF)
 
 print(paste0("Number of correlated probes removed : ", nrow(D) - nrow(D_CF)))
 ```
 
-#Step 2 : choose k 
+## Step 2 : choose k 
 
 To choose the number k of cell types, we used the function `plot_k` which makes a Principal Component Analysis and plot the eigenvalues of the probes matrix in descending order.
 
@@ -50,7 +54,7 @@ medepir::plot_k(D_CF)
 
 Then we used the Cattel's rule to select the number of principal components. Here, we see PCs = 4 which corresponds to 5 cell types.
 
-#Step 3 : feature selection 
+## Step 3 : feature selection 
 
 A popular assumption is that removing probes by feature selection will improve performance of deconvolution methods. Yet, such an approach may also discard relevant biological information (Teschendorff et al. 2017).
 The function `feature_selection` returns only probes with the largest variance.
@@ -59,11 +63,9 @@ The function `feature_selection` returns only probes with the largest variance.
 D_FS = medepir::feature_selection(D_CF, pval = 0.02)
 
 dim(D_FS)
-
-print(paste0("Number of low variance probes removed : ", nrow(D_CF) - nrow(D_FS)))
 ```
 
-#Step 4 : deconvolution
+## Step 4 : deconvolution
 
 D = TA
 We propose three methods of deconvolution, of three packages :
@@ -71,9 +73,14 @@ We propose three methods of deconvolution, of three packages :
 
 ```{r deconv}
 results_RFE = medepir::RFE(D_FS, nbcell = 5)
-results_MDC = medepir::MDC(D_FS, nbcell = 5, lambdas = c(0,10^(-5:-1)))
+```
 
-infloci = read.table("data/inf_loci.txt", header = FALSE, sep = "\t")
+```{r, eval=FALSE}
+results_MDC = medepir::MDC(D_FS, nbcell = 5, lambdas = c(0, 10^(-5:-1)))
+
+infloci = read.table(url("https://zenodo.org/record/3247635/files/inf_loci.txt"),
+                     header = FALSE, sep = "\t")
 infloci = as.vector(infloci$V1)
 results_Edec = medepir::Edec(D, nbcell = 5, infloci = infloci)
 ```
+
