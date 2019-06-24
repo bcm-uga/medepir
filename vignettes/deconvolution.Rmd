@@ -1,8 +1,12 @@
 ---
-title: "vignette_deconv"
+title: "Deconvolution"
 author: "Clémentine Decamps"
-date: "6 juin 2019"
-output: html_document
+date: "June 6, 2019"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include=FALSE}

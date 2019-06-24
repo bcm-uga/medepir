@@ -1,8 +1,12 @@
 ---
 title: "Simulations"
 author: "Clémentine Decamps"
-date: "13 juin 2019"
-output: html_document
+date: "June 13, 2019"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include=FALSE}
@@ -19,7 +23,7 @@ To simulate the T matrix of cell type-specific methylation profile, we used diff
 `sites_sexe` is the 1397 probes identified correlated with sex in the TCGA dataset (p-value < 0.01) using linear regression. `coeff_sexe` is the linear regression coefficient used to shift accordingly methylation value of female-associated T matrices. 
 
 ```{r datas}
-T_brute = readRDS("/data/T_brut_2.rds")
+T_brute = readRDS("data/T_brut_2.rds")
 head(T_brute)
 
 plate_effect = readRDS("data/plate_effect.rds")

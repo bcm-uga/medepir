@@ -28,4 +28,6 @@ Imports:
     RefFreeEWAS
 Suggests:
     EDec,
-    MeDeCom
+    MeDeCom,
+    knitr,
+    rmarkdown
