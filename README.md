@@ -14,8 +14,8 @@ To also build vignettes, use:
 
 ```R
 # Take 1-5 min to build
-remotes::install_github("bcm-uga/medepir", 
-                        build_opts = c("--no-resave-data", "--no-manual"))
+remotes::install_github(
+  "bcm-uga/medepir", build_opts = c("--no-resave-data", "--no-manual"))
                         
 # To see the two vignettes:
 vignette("simulations", package = "medepir")

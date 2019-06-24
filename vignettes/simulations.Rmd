@@ -4,7 +4,7 @@ author: "Clémentine Decamps"
 date: "June 13, 2019"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteIndexEntry{Simulations}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -57,7 +57,8 @@ The function `compute_D` allow to obtain the D matrix according to the D = TA mo
 Finnaly, the function `add_noise` add a random gaussian noise on the D matrix.
 
 ```{r simulation_D}
-exp_grp = medepir::create_exp_grp(n = 100, plates = plate_effect[,1], sex = T, age = F)
+exp_grp = medepir::create_exp_grp(n = 100, plates = plate_effect[, 1], 
+                                  sex = TRUE, age = FALSE)
 
 D = medepir::compute_D(A_mat = A, T_mat = T_brute, exp_grp, sites_sex = sites_sexe, 
               coeff_sex = coeff_sexe, plate_effect = plate_effect)

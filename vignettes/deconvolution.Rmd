@@ -4,7 +4,7 @@ author: "Clémentine Decamps"
 date: "June 6, 2019"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteIndexEntry{Deconvolution}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -37,7 +37,7 @@ head(exp_grp)[1:5, 1:5]
 Variation in DNA methylation relies on different factors, that are not always related with cell-type composition (such as age, sex, batch effects, etc.). We used the function `CF_detection` to removed probes correlated with confounding factors.
 
 ```{r CF}
-D_CF = medepir::CF_detection(D, exp_grp, threshold = 0.15)
+D_CF = medepir::CF_detection(D, exp_grp, threshold = 0.15, ncores = 2)
 
 dim(D_CF)
 
