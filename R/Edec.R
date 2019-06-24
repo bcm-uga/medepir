@@ -13,6 +13,10 @@
 #'@export
 
 Edec = function(D, nbcell = 5, infloci){
+  
+  if (!requireNamespace("Edec", quietly = TRUE))
+    stop("Please install package {Edec} (https://github.com/BRL-BCM/EDec).")
+  
   #Application de la méthode pour cette liste
   deconv = EDec::run_edec_stage_1(meth_bulk_samples = D, 
                             informative_loci = infloci, num_cell_types = nbcell)
