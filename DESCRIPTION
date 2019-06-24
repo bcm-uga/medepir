@@ -21,7 +21,7 @@ Authors@R:c(
            email = "magali.richard@univ-grenoble-alpes.fr")
            )
 Maintainer: Magali Richard <magali.richard@univ-grenoble-alpes.fr>
-Description: The `medepir` package provides practical implementation of recommended guidelines for inference of cell-type proportions with confounders, based on non-neagtive matrix factorization of DNA methylation data.
+Description: The `medepir` package provides practical implementation of recommended guidelines for inference of cell-type proportions with confounders, based on non-negative matrix factorization of DNA methylation data.
 License: CeCILL
 Encoding: UTF-8
 LazyData: true

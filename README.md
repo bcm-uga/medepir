@@ -1,7 +1,7 @@
 # medepir
 Data challenge methods 
 
-The `medepir` package provides practical implementation of recommended guidelines for inference of cell-type proportions with confounders, based on non-neagtive matrix factorization of DNA methylation data. 
+The `medepir` package (MEthylation DEconvoluation PIpeline in R) provides practical implementation of recommended guidelines for inference of cell-type proportions with confounders, based on non-negative matrix factorization of DNA methylation data. 
 
 ## Installation
 
