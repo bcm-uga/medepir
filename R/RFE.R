@@ -7,10 +7,7 @@
 #'
 #'@return This function return a list with the A and the T matrices computed.
 #'
-#'@example 
-#'
 #'@export
-
 RFE <- function(D, nbcell = 5){
   results = RefFreeEWAS::RefFreeCellMix(D, K = nbcell, iters = 9)
   #Extraction des matrices T et A
@@ -29,10 +26,7 @@ RFE <- function(D, nbcell = 5){
 #'
 #'@return This function return a list with the A and the T matrices computed.
 #'
-#'@example 
-#'
 #'@export
-
 RFE_with_svd <- function(D, nbcell = 5){
   init = RefFreeEWAS::RefFreeCellMixInitializeBySVD(D)
   mu = init[,1:nbcell]

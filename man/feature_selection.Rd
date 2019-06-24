@@ -17,6 +17,3 @@ This function return the D matrix with selected probes.
 \description{
 This function selects probes with a variance > pval
 }
-\examples{
-
-}

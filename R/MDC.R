@@ -8,10 +8,7 @@
 #'
 #'@return This function return a list with the A and the T matrices computed.
 #'
-#'@example 
-#'
 #'@export
-
 MDC = function(D, nbcell = 5, lambdas = c(0,10^(-5:-1))){
   
   if (!requireNamespace("MeDeCom", quietly = TRUE))

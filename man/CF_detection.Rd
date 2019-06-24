@@ -21,6 +21,3 @@ This function return the D matrix without correlated probes.
 \description{
 This function searchs the correlated probes by linear model.
 }
-\examples{
-
-}

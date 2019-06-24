@@ -24,9 +24,13 @@ VignetteBuilder: knitr
 Depends: R (>= 3.3)
 Imports: 
     bigstatsr,
+    combinat,
     doParallel,
+    foreach,
     ggplot2,
-    RefFreeEWAS
+    gtools,
+    RefFreeEWAS (>= 2.2),
+    stats
 Suggests:
     EDec,
     MeDeCom,
