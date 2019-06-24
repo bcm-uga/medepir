@@ -1,17 +1,33 @@
 Package: medepir
-Title: What the Package Does (One Line, Title Case)
-Version: 0.0.0.9000
-Authors@R: 
-    person(given = "First",
-           family = "Last",
+Type: R Package
+Title: A pipeline to quantify cell-type heterogeneity from DNA methylation data (MEthylation DEconvoluation PIpeline in R)
+Version: 0.1.0
+Authors@R:c(
+    person(given = "Clementine",
+           family = "Decamps",
            role = c("aut", "cre"),
-           email = "first.last@example.com",
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
-License: What license it uses
+           email = "clementine.decamps@gmail.com")
+    person(given = "Florian",
+           family = "Prive",
+           role = c("aut"),
+           email = "florian.prive@univ-grenoble-alpes.fr")
+    person(given = "Michael",
+           family = "Blum",
+           role = c("aut"),
+           email = "michael.blum@univ-grenoble-alpes.fr")
+   person(given = "Magali",
+           family = "Richard",
+           role = c("aut"),
+           email = "magali.richard@univ-grenoble-alpes.fr")
+           )
+Maintainer: Magali Richard <magali.richard@univ-grenoble-alpes.fr>
+Description: The `medepir` package provides practical implementation of recommended guidelines for inference of cell-type proportions with confounders, based on non-neagtive matrix factorization of DNA methylation data.
+License: CeCILL
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.1.1
+VignetteBuilder: knitr
+Depends: R(>= 2.10.0)
 Imports: 
     bigstatsr,
     ggplot2,
