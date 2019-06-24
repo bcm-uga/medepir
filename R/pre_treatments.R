@@ -66,6 +66,7 @@ bigstatsr::nb_cores
 CF_detection <- function(D, exp_grp, threshold = 0.15, ncores = nb_cores()){
   exp_grp <- exp_grp[sapply(exp_grp, function(x) mean(is.na(x)) <= 0.8)]
   doParallel::registerDoParallel(ncores)
+  on.exit(doParallel::stopImplicitCluster(), add = TRUE)
   pvalues <- foreach(var = exp_grp, .combine = "cbind") %dopar% {
     pval_CF(val = t(D), labels = var)
   }

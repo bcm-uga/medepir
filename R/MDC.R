@@ -14,7 +14,7 @@
 
 MDC = function(D, nbcell = 5, lambdas = c(0,10^(-5:-1))){
   #Run MeDeCom for all the lambda values
-  result_medecom = MeDeCom::runMeDeCom(D, nbcell, lambdas, NINIT = 10, NFOLDS = 10, ITERMAX = 300, NCORES = 5)
+  result_medecom = MeDeCom::runMeDeCom(D, nbcell, lambdas, NINIT = 10, NFOLDS = 10, ITERMAX = 300, NCORES = nb_cores())
   #Extraction of each results
   res_lambdas = round(as.numeric(MeDeCom::getStatistics(result_medecom, nbcell, lambdas)))
   #Choice of the best lambda
