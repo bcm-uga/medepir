@@ -1,6 +1,6 @@
 ---
-title: "Deconvolution"
-author: "Clémentine Decamps"
+title: "Estimating cell-type composition accounting for confounder variables. "
+author: "Michael Blum, Clémentine Decamps, Florian Privé, Magali Richard"
 date: "June 6, 2019"
 output: rmarkdown::html_vignette
 vignette: >
@@ -13,15 +13,13 @@ vignette: >
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-
+Based on DNA methylation values, the vignette shows how to estimate cell-type composition and cell type-specific methylation profiles accounting for confounder variables such as age and sex. 
 
 ## Data
 
-`D` is a simulated matrix of a complex tissue DNA methylation values.
-`exp_grp` is the corresponding experimental data, with for each patient different biological informations.
-From this complex D matrix, we want to performs non-negative matrix factorization to find cell type proportion (matrix A) and cell type-specific methylation profiles (matrix T).
+We provide access to  a simulated matrix `D` of a complex tissue DNA methylation values.
+The data frame `exp_grp` contains the corresponding experimental data for each patient. Here the data frame contains 22 different variables that include sex and age.
 
-D = TA
 ```{r datas}
 D = readRDS(url("https://zenodo.org/record/3247635/files/D.rds"))
 dim(D)
@@ -32,9 +30,9 @@ head(exp_grp)[1:5, 1:5]
 ```
 
 
-## Step 1 : filter 
+## Step 1: removing correlated probes 
 
-Variation in DNA methylation relies on different factors, that are not always related with cell-type composition (such as age, sex, batch effects, etc.). We used the function `CF_detection` to removed probes correlated with confounding factors.
+In addition to cell-type composition, DNA methylation can vary because of other confounder variables, such as age, sex, and batch effects. We use the function `CF_detection` to remove probes correlated with confounding factors. By default, the function assumes that all variables contained in the argument `exp_grp` are potential confounders. Using a linear regression for each of the variables, the function removes probes significantly associated with confounders (false discovery threshold defined by the `threshold` argument).
 
 ```{r CF}
 D_CF = medepir::CF_detection(D, exp_grp, threshold = 0.15, ncores = 2)
@@ -44,43 +42,42 @@ dim(D_CF)
 print(paste0("Number of correlated probes removed : ", nrow(D) - nrow(D_CF)))
 ```
 
-## Step 2 : choose k 
+## Step 2: choosing the number of cell types K 
 
-To choose the number k of cell types, we used the function `plot_k` which makes a Principal Component Analysis and plot the eigenvalues of the probes matrix in descending order.
+To choose the number $K$ of cell types, we used the function `plot_k`, which performs a Principal Component Analysis and plot the eigenvalues of the probes matrix in descending order.
 
 ```{r choice_k}
 medepir::plot_k(D_CF)  
 ```
 
-Then we used the Cattel's rule to select the number of principal components. Here, we see PCs = 4 which corresponds to 5 cell types.
+To select the number of principal components, we use Cattell rule that recommends to keep principal components that correspond to eigenvalues to the left of the straight line. Here, Cattell rule suggests to keep 4 principal components which corresponds to 5 cell types (the number of cell types is equal to the number of principal components plus one).
 
-## Step 3 : feature selection 
+## Step 3: feature selection 
 
-A popular assumption is that removing probes by feature selection will improve performance of deconvolution methods. Yet, such an approach may also discard relevant biological information (Teschendorff et al. 2017).
-The function `feature_selection` returns only probes with the largest variance.
+This step is optional. The function `feature_selection` select probes with the largest variance. By removing probes that do not vary, deconvolution routines can run much faster.
 
 ```{r FS}
-D_FS = medepir::feature_selection(D_CF, pval = 0.02)
+D_FS = medepir::feature_selection(D_CF, varmin = 0.02)
 
 dim(D_FS)
 ```
 
-## Step 4 : deconvolution
+## Step 4 :running deconvolution methods
 
-D = TA
-We propose three methods of deconvolution, of three packages :
+We propose three methods of deconvolution, of three packages:
 `RFE` to run `RefFreeEWAS::RefFreeCellMix`, MDC to run `MeDeCom::runMeDeCom` and Edec to run `EDec::run_edec_stage_1`. 
 
+Here we show the results obtained with `RefFreeEWAS`.
 ```{r deconv}
 results_RFE = medepir::RFE(D_FS, nbcell = 5)
 ```
 
+Results obtained with EDec and MeDeCom can be obtained by uncommenting the following code.
 ```{r, eval=FALSE}
-results_MDC = medepir::MDC(D_FS, nbcell = 5, lambdas = c(0, 10^(-5:-1)))
+#results_MDC = medepir::MDC(D_FS, nbcell = 5, lambdas = c(0, 10^(-5:-1)))
 
-infloci = read.table(url("https://zenodo.org/record/3247635/files/inf_loci.txt"),
-                     header = FALSE, sep = "\t")
-infloci = as.vector(infloci$V1)
-results_Edec = medepir::Edec(D, nbcell = 5, infloci = infloci)
+#infloci = read.table(url("https://zenodo.org/record/3247635/files/inf_loci.txt"),header = FALSE, sep = "\t")
+#infloci = as.vector(infloci$V1)
+#results_Edec = medepir::Edec(D, nbcell = 5, infloci = infloci)
 ```
 
