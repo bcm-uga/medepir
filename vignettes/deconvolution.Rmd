@@ -62,7 +62,7 @@ D_FS = medepir::feature_selection(D_CF, varmin = 0.02)
 dim(D_FS)
 ```
 
-## Step 4 :running deconvolution methods
+## Step 4: running deconvolution methods
 
 We propose three methods of deconvolution, of three packages:
 `RFE` to run `RefFreeEWAS::RefFreeCellMix`, MDC to run `MeDeCom::runMeDeCom` and Edec to run `EDec::run_edec_stage_1`. 
