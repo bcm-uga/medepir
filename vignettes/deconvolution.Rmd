@@ -3,6 +3,7 @@ title: "Estimating cell-type composition accounting for confounder variables. "
 author: "Michael Blum, Clémentine Decamps, Florian Privé, Magali Richard"
 date: "June 6, 2019"
 output: rmarkdown::html_vignette
+keep_md: true
 vignette: >
   %\VignetteIndexEntry{Deconvolution}
   %\VignetteEngine{knitr::rmarkdown}

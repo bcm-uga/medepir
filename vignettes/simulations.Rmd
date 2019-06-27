@@ -42,7 +42,7 @@ head(coeff_sexe)
 The function `compute_A` simulates the A matrix of cell types proportion using a Dirichlet distribution. `n` is the number of patients, `prop` define the different cell type proportions (here it is 10% for fibroblast, 60% for cancerous epithelial, 5% for T cells, 15% for control epithelial and 10% for cancerous mesenchyme cells).
 `alpha` is equal to the sum of the parameter of the Dirichlet distribution. It is inversely related to variation of proportions in the population. In the simulations, we choose `alpha=1` that corresponds to a population with variable proportions.
 
-```{r simulation_A}
+```{r simulation_A, fig.width=6,fig.height=5}
 A <- medepir::compute_A(n = 100, prop = c(0.1, 0.6, 0.05, 0.15, 0.1), alpha = 1)
 
 # plot histogram of proportion for each cell type
