@@ -4,16 +4,16 @@
 \alias{feature_selection}
 \title{Function to select probes with a high variance}
 \usage{
-feature_selection(D, pval = 0.02)
+feature_selection(D, varmin = 0.02)
 }
 \arguments{
-\item{D}{The matrix patients*probes.}
+\item{D}{The matrix of dimension patients*probes.}
 
-\item{pval}{The minimum variance to be selected.}
+\item{varmin}{The minimum variance to be selected.}
 }
 \value{
 This function return the D matrix with selected probes.
 }
 \description{
-This function selects probes with a variance > pval
+This function selects probes with a variance > varmin
 }

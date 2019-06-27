@@ -18,7 +18,7 @@ Description: A pipeline to quantify cell-type heterogeneity from DNA methylation
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.1.0
+RoxygenNote: 6.1.1
 Roxygen: list(markdown = TRUE)
 VignetteBuilder: knitr
 Depends: R (>= 3.3)
