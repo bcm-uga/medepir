@@ -84,7 +84,7 @@ Results obtained with EDec and MeDeCom can be obtained by uncommenting the follo
 
 ## Step 5: vizualizing results
 
-We can vizualize the matrix of cell-type proportions using a stacked bar plot .
+We can vizualize the matrix of cell-type proportions using a stacked bar plot.
 
 ```{r vizu_prop}
 
