@@ -4,16 +4,16 @@
 \alias{feature_selection}
 \title{Function to select probes with a high variance}
 \usage{
-feature_selection(D, varmin = 0.02)
+feature_selection(D, number = 5000)
 }
 \arguments{
 \item{D}{The matrix of dimension patients*probes.}
 
-\item{varmin}{The minimum variance to be selected.}
+\item{number}{number of largest variance probes to keep}
 }
 \value{
 This function return the D matrix with selected probes.
 }
 \description{
-This function selects probes with a variance > varmin
+This function select probes with the largest variance
 }

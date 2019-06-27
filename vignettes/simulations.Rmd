@@ -1,7 +1,7 @@
 ---
-title: "Simulations"
-author: "Clémentine Decamps"
-date: "June 13, 2019"
+title: "Simulating methylation data by convoluting cell type-specific methylation profiles."
+author: "Michael Blum, Clémentine Decamps, Florian Privé, Magali Richard"
+date: "June 27, 2019"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Simulations}
@@ -15,12 +15,11 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Data
 
-To simulate the T matrix of cell type-specific methylation profile, we used different study from GEO. For the cancerous epithelial line, we used the cell line GSM1560930 and for the cancerous mesenchymal line, we used the cell line GSM1560925, from the same study. For the fibroblast line, we used the cell line GSM1354676 after conversion from m-value to b-value. For the T lymphocyte line, we used the GSM1641099 and for the control epithelial it’s the GSM2743808.
+To simulate the T matrix of cell type-specific methylation profiles, we use different studies from GEO. For the cancerous epithelial line, we use the cell line GSM1560930 and for the cancerous mesenchymal line, we use the cell line GSM1560925 from the same study. For the fibroblast line, we use the cell line GSM1354676 after conversion from m-value to b-value. For the T cell line, we use the GSM1641099 and for the control epithelial cell, we use the GSM2743808.
 
-`plate_effect` is 22 median plate effects (TCGA experimental batch effect) using 1000 random probes, that we randomly apply on the simulated D matrix.
+`plate_effect` contains 22 median plate effects (TCGA experimental batch effect) for 1000 random probes. For each probe, we model plate effects using multiplicative coefficients that measure the ratio of mean methylation values of a plate on mean methylation of the (arbitrarily) 1st plate. Each coefficient is estimated by the median of the 1000 ratios of methylation values. These multiplicative coefficients are then used on all probes to model batch effects on the matrix D of individual convoluted methylation profiles. 
 
-
-`sites_sexe` is the 1397 probes identified correlated with sex in the TCGA dataset (p-value < 0.01) using linear regression. `coeff_sexe` is the linear regression coefficient used to shift accordingly methylation value of female-associated T matrices. 
+`sites_sexe` indicates the 1397 probes that are correlated with sex in the TCGA dataset. `sites_sexe` contains the linear regression coefficients used to shift methylation value of female-associated T matrices.
 
 ```{r datas}
 T_brute = readRDS(url("https://zenodo.org/record/3247635/files/T_brut_2.rds"))
@@ -40,21 +39,27 @@ head(coeff_sexe)
 
 ## Simulation of A matrix
 
-The function `compute_A` simulated the A matrix of cell types proportion by a Dirichlet distribution. `n` is the number of patients, `prop` define the differentcell type proportion, here we used 10% of fibroblast, 60% of cancerous epithelial, 5% of T lymphocytes, 15% of control epithelial and 10% of cancerous mesenchyme.
-`alpha` is the parameter of variation of proportions across the sample population. 1 is a variable population.
+The function `compute_A` simulates the A matrix of cell types proportion using a Dirichlet distribution. `n` is the number of patients, `prop` define the different cell type proportions (here it is 10% for fibroblast, 60% for cancerous epithelial, 5% for T cells, 15% for control epithelial and 10% for cancerous mesenchyme cells).
+`alpha` is equal to the sum of the parameter of the Dirichlet distribution. It is inversely related to variation of proportions in the population. In the simulations, we choose `alpha=1` that corresponds to a population with variable proportions.
 
 ```{r simulation_A}
-A = medepir::compute_A(n = 100, prop = c(0.1, 0.6, 0.05, 0.15, 0.1), alpha = 1)
-plot(density(A))
+A <- medepir::compute_A(n = 100, prop = c(0.1, 0.6, 0.05, 0.15, 0.1), alpha = 1)
+
+# plot histogram of proportion for each cell type
+rownames(A) <- c("fibroblast", "cancerous epithelial", "T-cells", "epithelial", "cancerous mesenchyme")
+dat <- as.data.frame.table(t(A))
+colnames(dat) <- c("indiv", "cell_type", "proportion")
+ggplot2::ggplot(dat, ggplot2::aes(x = proportion)) + ggplot2::geom_histogram(colour = "black", fill = "white", binwidth = 0.025) +
+  ggplot2::facet_grid(cell_type ~ .)
 ```
 
 ## Simulation of D matrix
 
-The function `create_exp_grp` make a random experimental dataset. It samples randomly the plate, the sex and / or the age of each patient. 
+The function `create_exp_grp` makes a random experimental dataset. It samples randomly the plate, the sex and/or the age of each patient. 
 
-The function `compute_D` allow to obtain the D matrix according to the D = TA model with all the confounding factors. The sex effect is add directly on the T matrix, while the plate effect is add after the multiplication. 
+The function `compute_D` allows to obtain the D matrix according to the D = TA model with all the confounding factors. The sex effect is added directly to the T matrix, while the plate effect is added after matrix multiplication. 
 
-Finnaly, the function `add_noise` add a random gaussian noise on the D matrix.
+Finally, the function `add_noise` add a random gaussian noise to the D matrix.
 
 ```{r simulation_D}
 exp_grp = medepir::create_exp_grp(n = 100, plates = plate_effect[, 1], 
@@ -68,7 +73,7 @@ D_noise = medepir::add_noise(data = D, mean = 0)
 
 ## Deconvolution of the D matrix
 
-We used the package RefFreeEwas to make the deconvolution.
+We use the package RefFreeEwas to make the deconvolution.
 
 ```{r deconv}
 results_RFE = medepir::RFE(D_noise, nbcell = 5)
@@ -76,7 +81,7 @@ results_RFE = medepir::RFE(D_noise, nbcell = 5)
 
 ## Analysis of the results
 
-The function `compare_A` compute the Mean Absolute Error between the A matrix used for the simulation and the A matrix compute by the method of deconvolution.
+The function `compare_A` computes the Mean Absolute Error between the A matrix used for the simulation and the A matrix computed by the method of deconvolution.
 
 ```{r results}
 medepir::compare_A(A_r = A, A_est = results_RFE$A)

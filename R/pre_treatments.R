@@ -69,15 +69,16 @@ CF_detection <- function(D, exp_grp, threshold = 0.15, ncores = nb_cores()){
 
 #'Function to select probes with a high variance
 #'
-#' This function selects probes with a variance > varmin
+#' This function select probes with the largest variance 
 #'
 #'@param D The matrix of dimension patients*probes.
-#'@param varmin The minimum variance to be selected.
+#'@param number number of largest variance probes to keep
 #'
 #'@return This function return the D matrix with selected probes.
 #'
 #'@export
-feature_selection <- function(D, varmin = 0.02){
+feature_selection <- function(D, number = 5000) {
   var <- apply(D, 1, var)
-  return(D[var > varmin, ])
+  thr <- sort(var, decreasing = T)[number]
+  return(D[var > thr, ])
 }

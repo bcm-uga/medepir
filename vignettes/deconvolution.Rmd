@@ -54,10 +54,10 @@ To select the number of principal components, we use Cattell rule that recommend
 
 ## Step 3: feature selection 
 
-This step is optional. The function `feature_selection` select probes with the largest variance. By removing probes that do not vary, deconvolution routines can run much faster.
+This step is optional. The function `feature_selection` select probes with the largest variance (5000 probes by default). By removing probes that do not vary, deconvolution routines can run much faster.
 
 ```{r FS}
-D_FS = medepir::feature_selection(D_CF, varmin = 0.02)
+D_FS = medepir::feature_selection(D_CF)
 
 dim(D_FS)
 ```
